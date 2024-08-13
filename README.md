@@ -43,7 +43,7 @@ conda create -n ai_scientist python=3.11
 conda activate ai_scientist
 
 # LLM APIs
-pip install anthropic aider-chat backoff openai
+pip install aider-chat backoff openai
 # Viz
 pip install matplotlib pypdf pymupdf4llm
 # Install pdflatex
@@ -55,8 +55,9 @@ pip install torch numpy transformers datasets tiktoken wandb tqdm
 
 We use the following environment variables for the different API providers for different models:
 
-`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`, `OPENROUTER_API_KEY`
-
+`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`, `OPENROUTER_API_KEY`  
+环境变量`BASE_URL`已经可以使用，更适合中国宝宝  
+**anthropic使用openai渠道，**  
 Our code can also optionally use a Semantic Scholar API Key (`S2_API_KEY`) for higher throughput [if you have one](https://www.semanticscholar.org/product/api), though in principle it should work without it.
 
 Be sure to provide the key for the model used for your runs, e.g.
