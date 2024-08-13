@@ -4,6 +4,8 @@ python iclr_analysis.py --num_reviews 500  --batch_size 50 --num_fs_examples 0 -
 
 import sys
 
+import ai_scientist.llm
+
 sys.path.append("../")
 
 from ai_scientist.perform_review import (
@@ -236,35 +238,7 @@ def review_single_paper(
     review_instruction_form,
     num_paper_pages,
 ):
-    # Setup client for LLM model
-    if model == "claude-3-5-sonnet-20240620":
-        import anthropic
-
-        client = anthropic.Anthropic()
-    elif model in [
-        "gpt-4o-2024-05-13",
-        "gpt-4o-mini-2024-07-18",
-        "gpt-4o-2024-08-06",
-    ]:
-        import openai
-
-        client = openai.OpenAI()
-    elif model == "deepseek-coder-v2-0724":
-        import openai
-
-        client = openai.OpenAI(
-            api_key=os.environ["DEEPSEEK_API_KEY"], base_url="https://api.deepseek.com"
-        )
-    elif model == "llama-3-1-405b-instruct":
-        import openai
-
-        client = openai.OpenAI(
-            api_key=os.environ["OPENROUTER_API_KEY"],
-            base_url="https://openrouter.ai/api/v1",
-        )
-    else:
-        raise ValueError(f"Model {model} not supported.")
-
+    client = ai_scientist.llm.create_client(args.model)
     rating = ore_ratings.iloc[idx]
     if rating.name in llm_ratings.index:
         print(f"{idx}: Review for {rating.name} already exists")

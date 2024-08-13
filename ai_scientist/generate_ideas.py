@@ -4,7 +4,7 @@ import os.path as osp
 import time
 from typing import List, Dict, Union
 from ai_scientist.llm import get_response_from_llm, extract_json_between_markers
-
+import ai_scientist.llm
 import requests
 import backoff
 
@@ -483,39 +483,8 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    # Create client
-    if args.model == "claude-3-5-sonnet-20240620":
-        import anthropic
-
-        print(f"Using Anthropic API with model {args.model}.")
-        client_model = "claude-3-5-sonnet-20240620"
-        client = anthropic.Anthropic()
-    elif args.model == "gpt-4o-2024-05-13" or args.model == "hybrid":
-        import openai
-
-        print(f"Using OpenAI API with model {args.model}.")
-        client_model = "gpt-4o-2024-05-13"
-        client = openai.OpenAI()
-    elif args.model == "deepseek-coder-v2-0724":
-        import openai
-
-        print(f"Using OpenAI API with {args.model}.")
-        client_model = "deepseek-coder-v2-0724"
-        client = openai.OpenAI(
-            api_key=os.environ["DEEPSEEK_API_KEY"], base_url="https://api.deepseek.com"
-        )
-    elif args.model == "llama3.1-405b":
-        import openai
-
-        print(f"Using OpenAI API with {args.model}.")
-        client_model = "meta-llama/llama-3.1-405b-instruct"
-        client = openai.OpenAI(
-            api_key=os.environ["OPENROUTER_API_KEY"],
-            base_url="https://openrouter.ai/api/v1",
-        )
-    else:
-        raise ValueError(f"Model {args.model} not supported.")
-
+    client = ai_scientist.llm.create_client(args.model)
+    client_model = args.model
     base_dir = osp.join("templates", args.experiment)
     results_dir = osp.join("results", args.experiment)
     ideas = generate_ideas(

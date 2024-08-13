@@ -1,3 +1,5 @@
+import os
+
 import backoff
 import openai
 import json
@@ -236,3 +238,49 @@ def extract_json_between_markers(llm_output):
         return parsed_json
     except json.JSONDecodeError:
         return None  # Invalid JSON format
+def create_client(model):
+    import openai
+
+    model_to_client = {
+        "claude-3-5-sonnet-20240620": {
+            "print_msg": "Using Anthropic API with model {model}.",
+            "client": openai.OpenAI(),
+        },
+        "gpt-4o-2024-05-13": {
+            "print_msg": "Using OpenAI API with model {model}.",
+            "client": openai.OpenAI(),
+        },
+        "hybrid": {
+            "print_msg": "Using OpenAI API with model {model}.",
+            "client": openai.OpenAI(),
+        },
+        "gpt-4o-2024-08-06": {
+            "print_msg": "Using OpenAI API with model {model}.",
+            "client": openai.OpenAI(),
+        },
+        "deepseek-coder-v2-0724": {
+            "print_msg": "Using OpenAI API with {model}.",
+            "client": openai.OpenAI(
+                api_key=os.environ["DEEPSEEK_API_KEY"],
+                base_url="https://api.deepseek.com"
+            ),
+        },
+        "llama3.1-405b": {
+            "print_msg": "Using OpenAI API with {model}.",
+            "client": openai.OpenAI(
+                api_key=os.environ["OPENROUTER_API_KEY"],
+                base_url="https://openrouter.ai/api/v1"
+            ),
+        },
+    }
+
+    if model not in model_to_client:
+        raise ValueError(f"Model {model} not supported.")
+
+    print(model_to_client[model]["print_msg"].format(model=model))
+    client = model_to_client[model]["client"]
+
+    if os.environ["BASE_URL"]:
+        client.base_url = os.environ["BASE_URL"]
+
+    return client

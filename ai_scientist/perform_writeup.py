@@ -4,6 +4,8 @@ import os.path as osp
 import shutil
 import subprocess
 from typing import Optional, Tuple
+
+import ai_scientist
 from ai_scientist.generate_ideas import search_for_papers
 from ai_scientist.llm import get_response_from_llm, extract_json_between_markers
 import re
@@ -532,37 +534,8 @@ if __name__ == "__main__":
         help="Model to use for AI Scientist.",
     )
     args = parser.parse_args()
-    if args.model == "claude-3-5-sonnet-20240620":
-        import anthropic
-
-        print(f"Using Anthropic API with model {args.model}.")
-        client_model = "claude-3-5-sonnet-20240620"
-        client = anthropic.Anthropic()
-    elif args.model == "gpt-4o-2024-05-13" or args.model == "hybrid":
-        import openai
-
-        print(f"Using OpenAI API with model {args.model}.")
-        client_model = "gpt-4o-2024-05-13"
-        client = openai.OpenAI()
-    elif args.model == "deepseek-coder-v2-0724":
-        import openai
-
-        print(f"Using OpenAI API with {args.model}.")
-        client_model = "deepseek-coder-v2-0724"
-        client = openai.OpenAI(
-            api_key=os.environ["DEEPSEEK_API_KEY"], base_url="https://api.deepseek.com"
-        )
-    elif args.model == "llama3.1-405b":
-        import openai
-
-        print(f"Using OpenAI API with {args.model}.")
-        client_model = "meta-llama/llama-3.1-405b-instruct"
-        client = openai.OpenAI(
-            api_key=os.environ["OPENROUTER_API_KEY"],
-            base_url="https://openrouter.ai/api/v1",
-        )
-    else:
-        raise ValueError(f"Model {args.model} not recognized.")
+    client = ai_scientist.llm.create_client(args.model)
+    client_model = args.model
     print("Make sure you cleaned the Aider logs if re-generating the writeup!")
     folder_name = args.folder
     idea_name = osp.basename(folder_name)
